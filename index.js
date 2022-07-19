@@ -12,6 +12,8 @@ const cellsVertical = 13;
 // const a = Math.floor(width / height * cellsHorizontal);
 // const b = Math.floor(height / width * cellsHorizontal);
 // const cellsVertical = Math.max(a,b);
+// this doesn't work, I think because there is an out of bounds array issue.
+// if cellsVertical is larger than cellsHorizontal, then the program does not work.
 
 const unitLengthX = width / cellsHorizontal;
 const unitLengthY = height / cellsVertical;
