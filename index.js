@@ -1,17 +1,10 @@
 const { Engine, Render, Runner, World, Bodies, Body, Events } = Matter;
 
-// const cells = 8;
-
 const width = window.innerWidth;
 const height = window.innerHeight;
 
-
-
-const cellsHorizontal = 14;
-const cellsVertical = 13;
-// const a = Math.floor(width / height * cellsHorizontal);
-// const b = Math.floor(height / width * cellsHorizontal);
-// const cellsVertical = Math.max(a,b);
+const cellsHorizontal = 4;
+const cellsVertical = 4;
 // this doesn't work, I think because there is an out of bounds array issue.
 // if cellsVertical is larger than cellsHorizontal, then the program does not work.
 
@@ -107,7 +100,6 @@ const stepThroughCell = (row, column) => {
         [row + 1, column, `down`],
         [row, column - 1, `left`]
     ]);
-    // console.log(neighbours);
 
     // for each neighbour...
     for (let neighbour of neighbours) {
@@ -136,8 +128,6 @@ const stepThroughCell = (row, column) => {
             horizontals[row][column] = true;
         }
 
-        // visit that next cell
-        // console.log(JSON.parse(JSON.stringify(grid)));
         stepThroughCell(nextRow, nextColumn);
     };
 
@@ -145,7 +135,6 @@ const stepThroughCell = (row, column) => {
 };
 
 stepThroughCell(startRow, startColumn);
-// console.log(grid, verticals, horizontals);
 
 const wallThickness = 10;
 
@@ -162,7 +151,10 @@ horizontals.forEach((row, rowIndex) => {
                 wallThickness,
                 { 
                     isStatic: true,
-                    label: `wall`
+                    label: `wall`,
+                    render: {
+                        fillStyle: `red`
+                    }
                 });
         World.add(world, wall);
 
@@ -182,7 +174,10 @@ verticals.forEach((row, rowIndex) => {
                 unitLengthY + wallThickness / 2,
                 {
                     isStatic: true,
-                    label: `wall`
+                    label: `wall`,
+                    render: {
+                        fillStyle: `red`
+                    }
                 });
         World.add(world, wall);
 
@@ -198,7 +193,10 @@ const goal = Bodies.rectangle(
     unitLengthY * 0.7,
     { 
         isStatic: true,
-        label: `goal`
+        label: `goal`,
+        render: {
+            fillStyle: `green`
+        }
     }
 );
 World.add(world, goal);
@@ -212,29 +210,27 @@ const ball = Bodies.circle(
     unitLengthY / 2,
     ballRadius,
     {
-        label: `ball`
+        label: `ball`,
+        render: {
+            fillStyle: `blue`
+        }
     }
 );
 World.add(world, ball);
 
 document.addEventListener(`keydown`, (event) => {
-    // console.log(event);
     const { x, y } = ball.velocity;
-    // console.log(x,y);
+    
     if (event.keyCode === 87 || event.keyCode === 38) {
-        // console.log(`move ball UP`);
         Body.setVelocity(ball, { x: x, y: -5 });
     }
     if (event.keyCode === 83 || event.keyCode === 40) {
-        // console.log(`move ball DOWN`);
         Body.setVelocity(ball, { x: x, y: 5 });
     }
     if (event.keyCode === 65 || event.keyCode === 37) {
-        // console.log(`move ball LEFT`);
         Body.setVelocity(ball, { x: -5, y: y });
     }
     if (event.keyCode === 68 || event.keyCode === 39) {
-        // console.log(`move ball RIGHT`);
         Body.setVelocity(ball, { x: 5, y: y });
     }
 });
@@ -249,7 +245,7 @@ Events.on(engine, `collisionStart`, event => {
             labels.includes(collision.bodyA.label) && 
             labels.includes(collision.bodyB.label)
         ) {
-            // console.log(`User won!`);
+            document.querySelector(`.winner`).classList.remove(`hidden`);
             world.gravity.y = 1;
             world.bodies.forEach(body => {
                 if (body.label === `wall`) {
